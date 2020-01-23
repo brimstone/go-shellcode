@@ -1,4 +1,5 @@
 // +build linux freebsd darwin
+
 package shellcode
 
 /*
