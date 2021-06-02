@@ -2,7 +2,10 @@ shellcode
 =========
 
 This is a program to run shellcode as its own process, all from memory. This was
-written to defeat anti-virus detection.
+written to defeat anti-virus detection. This is now getting detected as
+VirTool:Win32/Shrine.A. Use a tool like [garble](https://github.com/burrowers/garble)
+to obfuscate the binary to defeat static analysis. Change the code yourself to
+defeat behavior analysis.
 
 Usage
 =====
